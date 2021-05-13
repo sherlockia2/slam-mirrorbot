@@ -7,16 +7,17 @@ This is a Telegram bot writen in Python for mirroring files on the Internet to o
 
 ## Additional Features
 - Mirroring Uptobox.com links to Google Drive (Uptobox account must be premium)
+- Get detailed info about replied media
 - Nyaa.si and Sukebei Torrent search
 - Speedtest with picture results
-- Limiting torrent size support
+- Limiting Torrent size support
 - Check Heroku dynos stats
-- Add stickers to your pack
-- Shell and Executor
-- Racaty.net support
 - Custom image support
- 
-## From Source Repos
+- Racaty.net support
+- Shell and Executor
+- Stickers module
+
+## From Original Repos
 - Mirroring direct download links, Torrent, and Telegram files to Google Drive
 - Mirroring Mega.nz links to Google Drive (If your Mega account not premium, it will limit 4-5gb/day)
 - Copy files from someone's Drive to your Drive (Using Autorclone)
@@ -25,10 +26,10 @@ This is a Telegram bot writen in Python for mirroring files on the Internet to o
 - Docker support
 - Uploading To Team Drive
 - Index Link support
-- Service account support
+- Service Account support
 - Delete files from Drive
 - Shortener support
-- Custom Filename (Only for url, Telegram files and Youtube-dl. Not for Mega links and magnet/torrents)
+- Custom Filename (Only for url, Telegram files and Youtube-dl. Not for Mega links and Magnet/Torrents)
 - Extracting password protected files, using custom filename and download from password protected index links see these examples:
 <p><a href="https://telegra.ph/Magneto-Python-Aria---Custom-Filename-Examples-01-20"> <img src="https://img.shields.io/badge/see%20on%20telegraph-grey?style=for-the-badge" width="190""/></a></p>
 
@@ -82,11 +83,11 @@ Fill up rest of the fields. Meaning of each fields are discussed below:
 - **BOT_TOKEN**: The Telegram bot token that you get from [@BotFather](https://t.me/BotFather)
 - **GDRIVE_FOLDER_ID**: This is the folder ID of the Google Drive Folder to which you want to upload all the mirrors.
 - **DOWNLOAD_DIR**: The path to the local folder where the downloads should be downloaded to
-- **DOWNLOAD_STATUS_UPDATE_INTERVAL**: A short interval of time in seconds after which the Mirror progress message is updated. (I recommend to keep it 5 seconds at least)  
+- **DOWNLOAD_STATUS_UPDATE_INTERVAL**: A short interval of time in seconds after which the Mirror progress message is updated. (I recommend to keep it `5` seconds at least)  
 - **OWNER_ID**: The Telegram user ID (not username) of the Owner of the bot
 - **AUTHORIZED_CHATS**: Fill user_id and chat_id of you want to authorize.
-- **AUTO_DELETE_MESSAGE_DURATION**: Interval of time (in seconds), after which the bot deletes it's message (and command message) which is expected to be viewed instantly. Note: Set to -1 to never automatically delete messages
-- **IS_TEAM_DRIVE**: (Optional field) Set to `True` if `GDRIVE_FOLDER_ID` is from a Team Drive else False or Leave it empty.
+- **AUTO_DELETE_MESSAGE_DURATION**: Interval of time (in seconds), after which the bot deletes it's message (and command message) which is expected to be viewed instantly. Note: Set to `-1` to never automatically delete messages
+- **IS_TEAM_DRIVE**: (Optional field) Set to `True` if `GDRIVE_FOLDER_ID` is from a Team Drive else `False` or Leave it empty.
 - **USE_SERVICE_ACCOUNTS**: (Optional field) (Leave empty if unsure) Whether to use Service Accounts or not. For this to work see [Using service accounts](https://github.com/breakdowns/slam-mirrorbot#generate-service-accounts-what-is-service-account) section below.
 - **INDEX_URL**: (Optional field) Refer to https://github.com/maple3142/GDIndex/ The URL should not have any trailing '/'
 - **API_KEY**: This is to authenticate to your Telegram account for downloading Telegram files. You can get this from https://my.telegram.org DO NOT put this in quotes.
@@ -99,16 +100,18 @@ Fill up rest of the fields. Meaning of each fields are discussed below:
 - **STOP_DUPLICATE_MIRROR**: (Optional field) (Leave empty if unsure) if this field is set to `True`, bot will check file in drive, if it is present in Drive, downloading will be stopped. (Note: File will be checked using filename, not using filehash, so this feature is not perfect yet)
 - **ENABLE_FILESIZE_LIMIT**: Set it to `True` if you want to use `MAX_TORRENT_SIZE`.
 - **MAX_TORRENT_SIZE**: To limit the Torrent mirror size, Fill The amount you want to limit, examples: if you fill `15` it will limit `15gb`.
+- **HEROKU_API_KEY**: (Only if you deploying on Heroku) Your Heroku API key, get it from https://dashboard.heroku.com/account.
+- **HEROKU_APP_NAME**: (Only if you deploying on Heroku) Your Heroku app name.
 - **IMAGE_URL**: (Optional field) Show Image/Logo in /start message. Fill value of image your link image, use telegra.ph or any direct link image.
 - **UPTOBOX_TOKEN**: Uptobox token to mirror uptobox links. Get it from [Uptobox Premium Account](https://uptobox.com/my_account).
 - **SHORTENER_API**: Fill your Shortener api key if you are using Shortener.
-- **SHORTENER**: (Optional field) if you want to use Shortener in Gdrive and index link, fill shotener url here. Examples:
+- **SHORTENER**: (Optional field) if you want to use Shortener in Gdrive and index link, fill Shortener url here. Examples:
 ```
 exe.io, gplinks.in, shrinkme.io, urlshortx.com, shortzon.com
 ```
-Above are the supported url shorteners. Except these only some url shorteners are supported.
+Above are the supported url Shorteners. Except these only some url Shorteners are supported.
 
-**Note**: You can limit maximum concurrent downloads by changing the value of **MAX_CONCURRENT_DOWNLOADS** in aria.sh. By default, it's set to 7
+**Note**: You can limit maximum concurrent downloads by changing the value of **MAX_CONCURRENT_DOWNLOADS** in aria.sh. By default, it's set to `7`.
 
 </details>
 
@@ -148,80 +151,17 @@ sudo docker run mirrorbot
 - Fork this repo then upload **token.pickle** to your forks
 - Hit the **DEPLOY TO HEROKU** button and follow the further instructions in the screen
 
-**NOTE**: If you didn't upload **token.pickle**, uploading will not work.
+**NOTE**: If you didn't upload **token.pickle**, uploading will not work. How to generate **token.pickle**? [Read here](https://github.com/breakdowns/slam-mirrorbot#getting-google-oauth-api-credential-file)
 <p><a href="https://heroku.com/deploy"> <img src="https://img.shields.io/badge/Deploy%20To%20Heroku-blueviolet?style=for-the-badge&logo=heroku" width="200""/></a></p>
 
-## Deploying on Heroku using heroku-cli
-<details>
-    <summary><b>Click here for more details</b></summary>
+## Deploying on Heroku with heroku-cli and Goorm IDE
+<p><a href="https://telegra.ph/How-to-Deploy-a-Mirror-Bot-to-Heroku-with-CLI-05-06"> <img src="https://img.shields.io/badge/see%20on%20telegraph-grey?style=for-the-badge" width="190""/></a></p>
 
-- Install [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
-- Login into your Heroku account with command:
-```
-heroku login
-```
-- Create a new heroku app:
-```
-heroku create appname
-```
-- Select This App in your Heroku-cli: 
-```
-heroku git:remote -a appname
-```
-- Change Dyno Stack to a Docker Container:
-```
-heroku stack:set container -a appname
-```
-- Add Private Credentials and Config Stuff:
-```
-git add -f credentials.json token.pickle config.env heroku.yml
-```
-- Commit new changes:
-```
-git commit -m "Added Creds."
-```
-- Push Code to Heroku:
-```
-git push heroku master --force
-```
-- Restart Worker by these commands,You can Do it manually too in Heroku.
-- For Turning off the Bot:
-```
-heroku ps:scale worker=0 -a appname
-```
-- For Turning on the Bot:
-```
-heroku ps:scale worker=1 -a appname		
-```
 
-</details>
-
-## Bot commands to be set in [@BotFather](https://t.me/BotFather)
-
-```
-mirror - Start Mirroring
-tarmirror - Upload tar (zipped) file
-unzipmirror - Extract files
-clone - Copy file/folder to Drive
-watch - Mirror YT-DL support link
-tarwatch - Mirror Youtube playlist link as tar
-cancel - Cancel a task
-cancelall - Cancel all tasks
-del - Delete file from Drive
-list - [query] Searches files in G-Drive
-status - Get Mirror Status message
-stats - Bot Usage Stats
-help - Get Detailed Help
-speedtest - Check Speed of the host
-log - Bot Log [owner only]
-restart - restart bot [owner only]
-repo - Get the bot repo
-```
-
-## Using Service Accounts for uploading to avoid user rate limit
-For Service Account to work, you must set **USE_SERVICE_ACCOUNTS="True"** in config file or environment variables
-Many thanks to [AutoRClone](https://github.com/xyou365/AutoRclone) for the scripts
-**NOTE**: Using service accounts is only recommended while uploading to a Team Drive.
+# Using Service Accounts for uploading to avoid user rate limit
+For Service Account to work, you must set **USE_SERVICE_ACCOUNTS=**"True" in config file or environment variables, 
+Many thanks to [AutoRClone](https://github.com/xyou365/AutoRclone) for the scripts.
+**NOTE**: Using Service Accounts is only recommended while uploading to a Team Drive.
 
 ## Generate Service Accounts. [What is service account](https://cloud.google.com/iam/docs/service-accounts)
 
@@ -247,12 +187,12 @@ python3 gen_sa_accounts.py --download-keys project_id
 python3 add_to_team_drive.py -d SharedTeamDriveSrcID
 ```
 
-## Youtube-dl authentication using .netrc file
+# Youtube-dl authentication using .netrc file
 For using your premium accounts in Youtube-dl, edit the netrc file according to following format:
 ```
 machine host login username password my_youtube_password
 ```
-Where host is the name of extractor (eg. Youtube, Twitch). Multiple accounts of different hosts can be added each separated by a new line
+Where host is the name of extractor (eg. Youtube, Twitch). Multiple accounts of different hosts can be added each separated by a new line.
 
 # Support Group
 <p><a href="https://t.me/SlamMirrorSupport"> <img src="https://img.shields.io/badge/Slam%20Mirror%20Support-black?style=for-the-badge&logo=telegram" width="230""/></a></p>

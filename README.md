@@ -11,6 +11,7 @@ This is a Telegram bot writen in Python for mirroring files on the Internet to o
 - Nyaa.si and Sukebei Torrent search
 - Speedtest with picture results
 - Limiting Torrent size support
+- Sudo with database support
 - Check Heroku dynos stats
 - Custom image support
 - Racaty.net support
@@ -56,17 +57,62 @@ For Debian based distros
 ```
 sudo apt install python3
 ```
-Install Docker by following the [official docker docs](https://docs.docker.com/engine/install/debian/)
+Install Docker by following the [official Docker docs](https://docs.docker.com/engine/install/debian/)
 
 - For Arch and it's derivatives:
 ```
 sudo pacman -S docker python
 ```
-
 - Install dependencies for running setup scripts:
 ```
 pip3 install -r requirements-cli.txt
 ```
+## Generate Database
+<details>
+    <summary><b>Click here for more details</b></summary>
+
+**1. The easy way**
+- Make new Heroku blank app
+- Go to your Heroku blank app
+- Go to resources
+- In Add-ons search **Heroku Postgres**
+- Hit **Submit Order Form**
+- Copy your Database URL from Heroku Config Vars > **DATABASE_URL**
+
+**2. The hard way**
+- Install Postgresql:
+```
+sudo apt-get update && sudo apt-get install postgresql
+```
+- Change to the Postgres user:
+```
+sudo su - postgres
+```
+- Create a new database user (change YOUR_USER appropriately):
+```
+createuser -P -s -e YOUR_USER
+```
+This will be followed by you needing to input your password.
+- Create a new database table:
+```
+createdb -O YOUR_USER YOUR_DB_NAME
+```
+Change YOUR_USER and YOUR_DB_NAME appropriately.
+- Finally:
+```
+psql YOUR_DB_NAME -h YOUR_HOST YOUR_USER
+```
+This will allow you to connect to your database via your terminal. By default, YOUR_HOST should be 0.0.0.0:5432.
+
+You should now be able to build your database URL. This will be:
+```
+sqldbtype://username:pw@hostname:port/db_name
+```
+Replace sqldbtype with whichever db youre using (eg postgres, mysql, sqllite, etc) repeat for your username, password, hostname (localhost?), port (5432?), and db name.
+
+**NOTE**: If you deploying on Heroku, no need to generate database manually, because it will automatic generate database
+
+</details>
 
 ## Setting up config file
 <details>
@@ -86,7 +132,8 @@ Fill up rest of the fields. Meaning of each fields are discussed below:
 - **DOWNLOAD_STATUS_UPDATE_INTERVAL**: A short interval of time in seconds after which the Mirror progress message is updated. (I recommend to keep it `5` seconds at least)  
 - **OWNER_ID**: The Telegram user ID (not username) of the Owner of the bot
 - **AUTHORIZED_CHATS**: Fill user_id and chat_id of you want to authorize.
-- **AUTO_DELETE_MESSAGE_DURATION**: Interval of time (in seconds), after which the bot deletes it's message (and command message) which is expected to be viewed instantly. Note: Set to `-1` to never automatically delete messages
+- **DATABASE_URL**: Your Database URL. See [Generate Database](https://github.com/breakdowns/slam-mirrorbot/tree/master#generate-database) to generate database. (**NOTE**: If you deploying on Heroku, no need to generate database manually, because it will automatic generate database)
+- **AUTO_DELETE_MESSAGE_DURATION**: Interval of time (in seconds), after which the bot deletes it's message (and command message) which is expected to be viewed instantly. (**Note**: Set to `-1` to never automatically delete messages)
 - **IS_TEAM_DRIVE**: (Optional field) Set to `True` if `GDRIVE_FOLDER_ID` is from a Team Drive else `False` or Leave it empty.
 - **USE_SERVICE_ACCOUNTS**: (Optional field) (Leave empty if unsure) Whether to use Service Accounts or not. For this to work see [Using service accounts](https://github.com/breakdowns/slam-mirrorbot#generate-service-accounts-what-is-service-account) section below.
 - **INDEX_URL**: (Optional field) Refer to https://github.com/maple3142/GDIndex/ The URL should not have any trailing '/'
@@ -97,7 +144,7 @@ Fill up rest of the fields. Meaning of each fields are discussed below:
 - **MEGA_PASSWORD**: Your password for your mega.nz account
 - **BLOCK_MEGA_FOLDER**: (Optional field) If you want to remove mega.nz folder support, set it to `True`.
 - **BLOCK_MEGA_LINKS**: (Optional field) If you want to remove mega.nz mirror support, set it to `True`.
-- **STOP_DUPLICATE_MIRROR**: (Optional field) (Leave empty if unsure) if this field is set to `True`, bot will check file in drive, if it is present in Drive, downloading will be stopped. (Note: File will be checked using filename, not using filehash, so this feature is not perfect yet)
+- **STOP_DUPLICATE_MIRROR**: (Optional field) (Leave empty if unsure) if this field is set to `True`, bot will check file in drive, if it is present in Drive, downloading will be stopped. (**Note**: File will be checked using filename, not using filehash, so this feature is not perfect yet)
 - **ENABLE_FILESIZE_LIMIT**: Set it to `True` if you want to use `MAX_TORRENT_SIZE`.
 - **MAX_TORRENT_SIZE**: To limit the Torrent mirror size, Fill The amount you want to limit, examples: if you fill `15` it will limit `15gb`.
 - **HEROKU_API_KEY**: (Only if you deploying on Heroku) Your Heroku API key, get it from https://dashboard.heroku.com/account.
@@ -163,7 +210,7 @@ For Service Account to work, you must set **USE_SERVICE_ACCOUNTS=**"True" in con
 Many thanks to [AutoRClone](https://github.com/xyou365/AutoRclone) for the scripts.
 **NOTE**: Using Service Accounts is only recommended while uploading to a Team Drive.
 
-## Generate Service Accounts. [What is service account](https://cloud.google.com/iam/docs/service-accounts)
+## Generate Service Accounts. [What is Service Account](https://cloud.google.com/iam/docs/service-accounts)
 
 Let us create only the Service Accounts that we need. 
 **Warning**: abuse of this feature is not the aim of this project and we do **NOT** recommend that you make a lot of projects, just one project and 100 SAs allow you plenty of use, its also possible that over abuse might get your projects banned by Google. 

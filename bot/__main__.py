@@ -1,22 +1,24 @@
 import shutil, psutil
 import signal
-import pickle
+import os
+
 from pyrogram import idle
 from bot import app
-from os import execl, kill, path, remove
 from sys import executable
 from datetime import datetime
 import pytz
 import time
-from telegram import ParseMode, BotCommand, InlineKeyboardMarkup, InlineKeyboardButton
+
+from telegram import ParseMode, BotCommand
 from telegram.ext import CommandHandler, run_async
-from bot import dispatcher, updater, botStartTime, IMAGE_URL
+from bot import bot, dispatcher, updater, botStartTime, IMAGE_URL
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import *
 from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
 from .helper.telegram_helper.filters import CustomFilters
-from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clone, watch, shell, eval, anime, stickers, search, delete, speedtest, usage, mediainfo
+from bot.helper.telegram_helper import button_build
+from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clone, watch, shell, eval, anime, stickers, search, delete, speedtest, usage, mediainfo, count
 
 now=datetime.now(pytz.timezone('Asia/Jakarta'))
 
@@ -36,7 +38,7 @@ def stats(update, context):
     disk = psutil.disk_usage('/').percent
     stats = f'<b>Bot Uptime:</b> {currentTime}\n' \
             f'<b>Start Time:</b> {current}\n' \
-            f'<b>Total disk space:</b> {total}\n' \
+            f'<b>Total Disk Space:</b> {total}\n' \
             f'<b>Used:</b> {used}  ' \
             f'<b>Free:</b> {free}\n\n' \
             f'📊Data Usage📊\n<b>Upload:</b> {sent}\n' \
@@ -53,16 +55,18 @@ def start(update, context):
 This bot can mirror all your links to Google drive!
 Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
-    update.effective_message.reply_photo(IMAGE_URL, start_string, parse_mode=ParseMode.MARKDOWN)
-
-
-@run_async
-def repo(update, context):
-    button = [
-    [InlineKeyboardButton("Repo", url=f"https://github.com/breakdowns/slam-mirrorbot")],
-    [InlineKeyboardButton("Support Group", url=f"https://t.me/SlamMirrorSupport")]]
-    reply_markup = InlineKeyboardMarkup(button)
-    update.effective_message.reply_photo(IMAGE_URL, reply_markup=reply_markup)
+    buttons = button_build.ButtonMaker()
+    buttons.buildbutton("Repo", "https://github.com/breakdowns/slam-mirrorbot")
+    buttons.buildbutton("Support Group", "https://t.me/SlamMirrorSupport")
+    reply_markup = InlineKeyboardMarkup(buttons.build_menu(2))
+    LOGGER.info('UID: {} - UN: {} - MSG: {}'.format(update.message.chat.id, update.message.chat.username, update.message.text))
+    if CustomFilters.authorized_user(update) or CustomFilters.authorized_chat(update):
+        if update.message.chat.type == "private" :
+            sendMessage(f"Hey I'm Alive 🙂", context.bot, update)
+        else :
+            update.effective_message.reply_photo(IMAGE_URL, start_string, parse_mode=ParseMode.MARKDOWN, reply_markup=reply_markup)
+    else :
+        sendMessage(f"Oops! not a Authorized user.", context.bot, update)
 
 
 @run_async
@@ -70,10 +74,11 @@ def restart(update, context):
     restart_message = sendMessage("Restarting, Please wait!", context.bot, update)
     LOGGER.info(f'Restarting the Bot...')
     # Save restart message object in order to reply to it after restarting
+    with open(".restartmsg", "w") as f:
+        f.truncate(0)
+        f.write(f"{restart_message.chat.id}\n{restart_message.message_id}\n")
     fs_utils.clean_all()
-    with open('restart.pickle', 'wb') as status:
-        pickle.dump(restart_message, status)
-    execl(executable, executable, "-m", "bot")
+    os.execl(executable, executable, "-m", "bot")
 
 
 @run_async
@@ -101,6 +106,8 @@ def bot_help(update, context):
 /{BotCommands.TarMirrorCommand} [download_url][magnet_link]: Start mirroring and upload the archived (.tar) version of the download
 
 /{BotCommands.CloneCommand}: Copy file/folder to Google Drive
+
+/{BotCommands.CountCommand}: Count files/folders of G-Drive Links
 
 /{BotCommands.DeleteCommand} [link]: Delete file from Google Drive (Only Owner & Sudo)
 
@@ -132,8 +139,6 @@ def bot_help(update, context):
 
 /{BotCommands.SpeedCommand}: Check Internet Speed of the Host
 
-/{BotCommands.RepoCommand}: Get the bot repo.
-
 /shell: Run commands in Shell (Terminal).
 
 /mediainfo: Get detailed info about replied media.
@@ -156,6 +161,8 @@ def bot_help(update, context):
 
 /{BotCommands.CloneCommand}: Copy file/folder to Google Drive
 
+/{BotCommands.CountCommand}: Count files/folders of G-Drive Links
+
 /{BotCommands.WatchCommand} [youtube-dl supported link]: Mirror through youtube-dl. Click /{BotCommands.WatchCommand} for more help.
 
 /{BotCommands.TarWatchCommand} [youtube-dl supported link]: Mirror through youtube-dl and tar before uploading
@@ -169,8 +176,6 @@ def bot_help(update, context):
 /{BotCommands.StatsCommand}: Show Stats of the machine the bot is hosted on
 
 /{BotCommands.SpeedCommand}: Check Internet Speed of the Host
-
-/{BotCommands.RepoCommand}: Get the bot repo.
 
 /mediainfo: Get detailed info about replied media.
 
@@ -203,23 +208,21 @@ BotCommand(f'{BotCommands.StatsCommand}','Bot Usage Stats'),
 BotCommand(f'{BotCommands.HelpCommand}','Get Detailed Help'),
 BotCommand(f'{BotCommands.SpeedCommand}','Check Speed of the host'),
 BotCommand(f'{BotCommands.LogCommand}','Bot Log [owner only]'),
-BotCommand(f'{BotCommands.RestartCommand}','Restart bot [owner only]'),
-BotCommand(f'{BotCommands.RepoCommand}','Get the bot repo')]
+BotCommand(f'{BotCommands.RestartCommand}','Restart bot [owner only]')]
 
 
 def main():
     fs_utils.start_cleanup()
     # Check if the bot is restarting
-    if path.exists('restart.pickle'):
-        with open('restart.pickle', 'rb') as status:
-            restart_message = pickle.load(status)
-        restart_message.edit_text("Restarted Successfully!")
-        LOGGER.info('Restarted Successfully!')
-        remove('restart.pickle')
+    if os.path.isfile(".restartmsg"):
+        with open(".restartmsg") as f:
+            chat_id, msg_id = map(int, f)
+        bot.edit_message_text("Restarted successfully!", chat_id, msg_id)
+        os.remove(".restartmsg")
+
     bot.set_my_commands(botcmds)
 
-    start_handler = CommandHandler(BotCommands.StartCommand, start,
-                                   filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+    start_handler = CommandHandler(BotCommands.StartCommand, start)
     ping_handler = CommandHandler(BotCommands.PingCommand, ping,
                                   filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
     restart_handler = CommandHandler(BotCommands.RestartCommand, restart,
@@ -229,15 +232,12 @@ def main():
     stats_handler = CommandHandler(BotCommands.StatsCommand,
                                    stats, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
     log_handler = CommandHandler(BotCommands.LogCommand, log, filters=CustomFilters.owner_filter | CustomFilters.sudo_user)
-    repo_handler = CommandHandler(BotCommands.RepoCommand, repo,
-                                   filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(ping_handler)
     dispatcher.add_handler(restart_handler)
     dispatcher.add_handler(help_handler)
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
-    dispatcher.add_handler(repo_handler)
     updater.start_polling()
     LOGGER.info("Bot Started!")
     signal.signal(signal.SIGINT, fs_utils.exit_clean_up)

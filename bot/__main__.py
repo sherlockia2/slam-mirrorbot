@@ -210,14 +210,6 @@ BotCommand(f'{BotCommands.RepoCommand}','Get the bot repo')]
 def main():
     fs_utils.start_cleanup()
     # Check if the bot is restarting
-    SUPPORT_GROUP = "tgelkayb0ts"
-    if SUPPORT_GROUP is not None and isinstance(SUPPORT_GROUP, str):
-        try:
-            dispatcher.bot.sendMessage(f"@{SUPPORT_GROUP}", "Bot Restarted!")
-        except Unauthorized:
-            LOGGER.warning("Bot isnt able to send message to support_chat, go and check!")
-        except BadRequest as e:
-            LOGGER.warning(e.message)
     if path.exists('restart.pickle'):
         with open('restart.pickle', 'rb') as status:
             restart_message = pickle.load(status)

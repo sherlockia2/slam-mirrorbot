@@ -107,7 +107,7 @@ def bot_help(update, context):
 
 /{BotCommands.CloneCommand}: Copy file/folder to Google Drive
 
-/{BotCommands.CountCommand}: Count files/folders of G-Drive Links
+/{BotCommands.CountCommand}: Count file/folder of Google Drive Links
 
 /{BotCommands.DeleteCommand} [link]: Delete file from Google Drive (Only Owner & Sudo)
 
@@ -161,7 +161,7 @@ def bot_help(update, context):
 
 /{BotCommands.CloneCommand}: Copy file/folder to Google Drive
 
-/{BotCommands.CountCommand}: Count files/folders of G-Drive Links
+/{BotCommands.CountCommand}: Count file/folder of Google Drive Links
 
 /{BotCommands.WatchCommand} [youtube-dl supported link]: Mirror through youtube-dl. Click /{BotCommands.WatchCommand} for more help.
 
@@ -197,18 +197,19 @@ BotCommand(f'{BotCommands.MirrorCommand}', 'Start Mirroring'),
 BotCommand(f'{BotCommands.TarMirrorCommand}','Upload tar (zipped) file'),
 BotCommand(f'{BotCommands.UnzipMirrorCommand}','Extract files'),
 BotCommand(f'{BotCommands.CloneCommand}','Copy file/folder to Drive'),
+BotCommand(f'{BotCommands.CountCommand}','Count file/folder of Drive link'),
 BotCommand(f'{BotCommands.WatchCommand}','Mirror YT-DL support link'),
 BotCommand(f'{BotCommands.TarWatchCommand}','Mirror Youtube playlist link as tar'),
 BotCommand(f'{BotCommands.CancelMirror}','Cancel a task'),
 BotCommand(f'{BotCommands.CancelAllCommand}','Cancel all tasks'),
 BotCommand(f'{BotCommands.DeleteCommand}','Delete file from Drive'),
-BotCommand(f'{BotCommands.ListCommand}',' [query] Searches files in G-Drive'),
+BotCommand(f'{BotCommands.ListCommand}',' [query] Searches files in Drive'),
 BotCommand(f'{BotCommands.StatusCommand}','Get Mirror Status message'),
 BotCommand(f'{BotCommands.StatsCommand}','Bot Usage Stats'),
 BotCommand(f'{BotCommands.HelpCommand}','Get Detailed Help'),
 BotCommand(f'{BotCommands.SpeedCommand}','Check Speed of the host'),
-BotCommand(f'{BotCommands.LogCommand}','Bot Log [owner only]'),
-BotCommand(f'{BotCommands.RestartCommand}','Restart bot [owner only]')]
+BotCommand(f'{BotCommands.LogCommand}','Bot Log [owner/sudo only]'),
+BotCommand(f'{BotCommands.RestartCommand}','Restart bot [owner/sudo only]')]
 
 
 def main():

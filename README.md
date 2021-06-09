@@ -15,28 +15,31 @@
 **Slam Mirror Bot** is a multipurpose Telegram Bot writen in Python for mirroring files on the Internet to our beloved Google Drive.
 
 # Features supported:
-
 ## Additional Features
-- Get detailed info about replied media
+- Get detailed info about replied media (Only for Telegram file)
 - Nyaa.si and Sukebei Torrent search
 - Speedtest with picture results
+- Limiting cloning Google Drive support
 - Limiting Torrent size support
 - Sudo with Database support
 - Multiple Trackers support
 - Check Heroku dynos stats
+- Extracting **tar.xz** support
 - Custom image support
 - Counting file/folder
 - Shell and Executor
 - Stickers module
+- View Link button (Not all Index support, recommended using [Bhadoo Index](https://github.com/ParveenBhadooOfficial/Google-Drive-Index))
 - Direct links supported:
 ```
-Racaty, Hxfile, Anonfiles,
-Fembed (femax20 & layarkacaxxi), Onedrive (Only works for file not folder)
+Racaty.net, Hxfile.co, Anonfiles.com, Fembed.com, Femax20.com, Layarkacaxxi.icu,
+Naniplay.com, Naniplay.nanime.in, Naniplay.nanime.biz, Sbembed.com, Streamsb.net,
+Uptobox.com (Uptobox account must be premium),
+Onedrive/1drv.ms (Only works for file not folder or busines account)
 ```
 ## From Original Repos
 - Mirroring direct download links, Torrent, and Telegram files to Google Drive
 - Mirroring Mega.nz links to Google Drive (If your Mega account not premium, it will limit 4-5gb/day)
-- Mirroring Uptobox.com links to Google Drive (Uptobox account must be premium)
 - Copy files from someone's Drive to your Drive (Using Autorclone)
 - Download/Upload progress, Speeds and ETAs
 - Mirror all Youtube-dl supported links
@@ -130,13 +133,14 @@ Fill up rest of the fields. Meaning of each fields are discussed below:
 - **AUTHORIZED_CHATS**: Fill user_id and chat_id of you want to authorize.
 - **IS_TEAM_DRIVE**: (Optional field) Set to `True` if `GDRIVE_FOLDER_ID` is from a Team Drive else `False` or Leave it empty.
 - **USE_SERVICE_ACCOUNTS**: (Optional field) (Leave empty if unsure) Whether to use Service Accounts or not. For this to work see [Using service accounts](https://github.com/breakdowns/slam-mirrorbot#generate-service-accounts-what-is-service-account) section below.
-- **INDEX_URL**: (Optional field) Refer to https://github.com/maple3142/GDIndex/ The URL should not have any trailing '/'
+- **INDEX_URL**: (Optional field) Refer to https://github.com/ParveenBhadooOfficial/Google-Drive-Index The URL should not have any trailing '/'
 - **MEGA_API_KEY**: Mega.nz api key to mirror mega.nz links. Get it from [Mega SDK Page](https://mega.nz/sdk)
 - **MEGA_EMAIL_ID**: Your email id you used to sign up on mega.nz for using premium accounts (Leave th)
 - **MEGA_PASSWORD**: Your password for your mega.nz account
 - **BLOCK_MEGA_FOLDER**: (Optional field) If you want to remove mega.nz folder support, set it to `True`.
 - **BLOCK_MEGA_LINKS**: (Optional field) If you want to remove mega.nz mirror support, set it to `True`.
 - **STOP_DUPLICATE_MIRROR**: (Optional field) (Leave empty if unsure) if this field is set to `True`, bot will check file in drive, if it is present in Drive, downloading will be stopped. (**Note**: File will be checked using filename, not using filehash, so this feature is not perfect yet)
+- **CLONE_LIMIT**: To limit cloning Google Drive (leave space between number and unit, **tb or gb only**), examples: if you fill `1 gb` it will limit `1gb`.
 - **ENABLE_FILESIZE_LIMIT**: Set it to `True` if you want to use `MAX_TORRENT_SIZE`.
 - **MAX_TORRENT_SIZE**: To limit the Torrent mirror size, Fill The amount you want to limit, examples: if you fill `15` it will limit `15gb`.
 - **IMAGE_URL**: (Optional field) Show Image/Logo in /start message. Fill value of image your link image, use telegra.ph or any direct link image.
@@ -153,13 +157,13 @@ Above are the supported url Shorteners. Except these only some url Shorteners ar
 
 **Note**: You can limit maximum concurrent downloads by changing the value of **MAX_CONCURRENT_DOWNLOADS** in aria.sh. By default, it's set to `7`.
 ### Add more buttons (Optional)
-Two buttons are already added of Drive Link and Index Link, you can add extra buttons, these are optional, if you don't know what are below entries, simply leave them, don't fill anything in them.
-- **BUTTON_THREE_NAME**:
-- **BUTTON_THREE_URL**:
+Three buttons are already added of Drive Link, Index Link, and View Link, you can add extra buttons, these are optional, if you don't know what are below entries, simply leave them, don't fill anything in them.
 - **BUTTON_FOUR_NAME**:
 - **BUTTON_FOUR_URL**:
 - **BUTTON_FIVE_NAME**:
 - **BUTTON_FIVE_URL**:
+- **BUTTON_SIX_NAME**:
+- **BUTTON_SIX_URL**:
 
 </details>
 
@@ -288,5 +292,6 @@ Thanks to:
 - [Dank-del](https://github.com/Dank-del/) for base repo
 - [magneto261290](https://github.com/magneto261290/) for some features
 - [SVR666](https://github.com/SVR666/) for some features & fixes
+- [anasty17](https://github.com/anasty17) for some features & help
 
 And many more people who aren't mentioned here, but may be found in [Contributors](https://github.com/breakdowns/slam-mirrorbot/graphs/contributors).
